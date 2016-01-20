@@ -1,16 +1,63 @@
-## Readme
+## Piwiki PHP API
 
-A PHP wrapper class for [Piwik](http://piwik.org/)
+[![Build Status](https://travis-ci.org/VisualAppeal/Piwik-PHP-API.svg)](https://travis-ci.org/VisualAppeal/Piwik-PHP-API)
+
+A PHP wrapper class for the [Piwik](http://piwik.org/) API.
 
 ## Requirements
 
-* cUrl
+* PHP >= 5.4
+* cUrl (php-curl)
 
-## Use
+## Install
+
+This library can be installed via composer: `"visualappeal/piwik-php-api": "1.2.*"`
+
+## Changelog
+
+### 1.2.1 (2015/11/09)
+
+* Added: Compatible to Piwik 2.15.1
+
+### 1.2.0 (2015/05/03)
+
+* Changed: Removed optional parameters for the methods and added optional parameters array. Some methods signatures changed, so please check your methods before upgrading.
+
+For example `getUrlsForSocial($segment = '', $idSubtable = '')` is now `getUrlsForSocial($segment = '', $optional = [])`. So instead of calling `$piwik->getUrlsForSocial('browserCode==FF;country==DE', 4)` you have to call `$piwik->getUrlsForSocial('browserCode==FF;country==DE', ['idSubtable' => 4])`.
+
+* Added: Compatible to Piwik 2.13.0
+
+### 1.1.2 (2015/03/22)
+
+* Fixed: Errors were not appended to error array
+* Changed: Requires PHP 5.4 ([5.3 is not supported anymore](http://php.net/archive/2014.php#id2014-08-14-1))
+* Added: Unit tests
+
+### 1.1.1 (2015/02/18)
+
+* Added: Get separate data entries for a date range without the range period parameter [#14](https://github.com/VisualAppeal/Piwik-PHP-API/issues/14)
+* Added: Compatible to Piwik 2.11
+
+### 1.1.0 (2015/02/13)
+
+* Changed: Support for PSR-4 autoloading
+
+### 1.0.1 (2015/02/13)
+
+* Fixed: Multiple bugs
+
+### 1.0.0 (2014/12/13)
+
+* Added: Compatibility to piwik 2.10.0
+
+## Usage
 
 ### Create an instance of piwik
 
-	require('Piwik.php');
+	require(__DIR__ . '/vendor/autoload.php');
+
+	use VisualAppeal\Piwik;
+
 	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 'siteId');
 
 There are some basic parameters (period, date, range) which you can define at the beginning. They do not change until you reset them with
@@ -19,13 +66,13 @@ There are some basic parameters (period, date, range) which you can define at th
 
 So you can execute multiple requests without specifying the parameters again.
 
-### siteId 
+### siteId
 
 The ID of your website, single number, list separated through comma "1,4,7", or "all"
 
 ### period
 
-The period you request the statistics for 
+The period you request the statistics for
 
 	Piwik::PERIOD_DAY
 	Piwik::PERIOD_WEEK
@@ -58,7 +105,7 @@ Set the date via
 	$piwik->setDate('YYYY-mm-dd');
 
 Or use the constants
-	
+
 	$piwik->setDate(Piwik::DATE_TODAY);
 	$piwik->setDate(Piwik::DATE_YESTERDAY);
 
@@ -99,26 +146,13 @@ All available formats
 
 Get all the unique visitors from yesterday:
 
-	require('piwik.php');
+	require(__DIR__ . '/vendor/autoload.php');
+
+	use VisualAppeal\Piwik;
+
 	$piwik = new Piwik('http://stats.example.org', 'my_access_token', 1, Piwik::FORMAT_JSON);
-	
+
 	$piwik->setPeriod(Piwik::PERIOD_DAY);
 	$piwik->setDate(Piwik::DATE_YESTERDAY);
-	
-	echo "Unique visitors yesterday: ".$piwik->getUniqueVisitors();
 
-## License
-
-Copyright 2012 - VisualAppeal GbR - www.visualappeal.de
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-`http://www.apache.org/licenses/LICENSE-2.0`
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+	echo 'Unique visitors yesterday: ' . $piwik->getUniqueVisitors();
